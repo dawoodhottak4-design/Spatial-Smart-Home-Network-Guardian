@@ -21,7 +21,7 @@ st.markdown("""
 
 # Sidebar Control Center
 st.sidebar.markdown("### ⚙️ Guardian Control Hub")
-api_key_input = st.sidebar.text_input("Enter Groq API Key", type="password", help="Required for ultra-fast LLM & Whisper processing")
+api_key_input = st.sidebar.text_input("Enter Groq API Key", type="password", help="Required for LLM & Whisper processing")
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 🏠 Lifestyle & Network Modes")
@@ -52,7 +52,7 @@ with tab1:
     with col1:
         st.metric("Gateway Ping (192.168.1.1)", f"{random.randint(2, 6)} ms", "Optimal")
     with col2:
-        st.metric("Cloud Latency (Groq API)", f"{random.randint(45, 80)} ms", "Ultra-Fast")
+        st.metric("Cloud Latency (Groq API)", f"{random.randint(45, 80)} ms", "Connected")
     with col3:
         st.metric("Active IoT Devices", "14 Connected", "Secure")
     with col4:
@@ -72,7 +72,7 @@ with tab1:
 
 with tab2:
     st.markdown("### 🎙️ Multi-Modal Interaction (Voice Whisper + Groq LLM)")
-    st.info("💡 You can type your network request or simulate voice commands processed via Groq Whisper API.")
+    st.info("💡 You can type your network request or simulate voice commands processed via Groq API.")
 
     user_prompt = st.text_area(
         "Give a command to your Spatial Guardian:",
@@ -92,7 +92,6 @@ with tab2:
                 try:
                     client = Groq(api_key=api_key_input)
                     
-                    # If audio is uploaded, we can note it, otherwise use text prompt
                     input_text = user_prompt
                     if audio_file:
                         input_text = "[Voice Command Simulated via Whisper]: Optimize network channels and resolve latency issues."
@@ -103,6 +102,7 @@ with tab2:
                         f"within 70 words."
                     )
 
+                    # Reverted back to openai/gpt-oss-120b for testing phase
                     completion = client.chat.completions.create(
                         model="openai/gpt-oss-120b",
                         messages=[
