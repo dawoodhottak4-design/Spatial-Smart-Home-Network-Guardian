@@ -76,12 +76,17 @@ with tab2:
 
     user_prompt = st.text_area(
         "Give a command to your Spatial Guardian:",
-        placeholder="e.g., My smart security camera is lagging. Optimize the bandwidth for it and prioritize my work laptop."
+        placeholder="e.g., My smart security camera is lagging. Optimize the bandwidth for it and prioritize my work laptop.",
+        key="user_prompt_input"
     )
 
     # Simulated Voice-to-Text Upload Option
     audio_file = st.file_uploader("Upload Voice Command (.mp3 / .wav for Whisper simulation)", type=["mp3", "wav", "m4a"])
     
+    # Initialize session state to persist result across reruns
+    if "guardian_result" not in st.session_state:
+        st.session_state.guardian_result = None
+
     if st.button("🚀 Execute Guardian Command", type="primary"):
         if not api_key_input:
             st.error("⚠️ Please enter your Groq API Key in the sidebar.")
@@ -102,7 +107,6 @@ with tab2:
                         f"within 70 words."
                     )
 
-                    # Reverted back to openai/gpt-oss-120b for testing phase
                     completion = client.chat.completions.create(
                         model="openai/gpt-oss-120b",
                         messages=[
@@ -110,16 +114,19 @@ with tab2:
                             {"role": "user", "content": input_text}
                         ],
                         temperature=0.4,
-                        max_tokens=300  # 
+                        max_tokens=300
                     )
 
-                    reply = completion.choices[0].message.content
-                    
-                    st.success("### ✅ Guardian Execution Result:")
-                    st.write(reply)
+                    # Store result in session state so it stays on screen
+                    st.session_state.guardian_result = completion.choices[0].message.content
                     
                 except Exception as e:
-                    st.error(f"❌ Execution Error: {str(e)}")
+                    st.session_state.guardian_result = f"❌ Execution Error: {str(e)}"
+
+    # Display persisted result from session state
+    if st.session_state.guardian_result:
+        st.success("### ✅ Guardian Execution Result:")
+        st.write(st.session_state.guardian_result)
 
 with tab3:
     st.markdown("### 🥽 Spatial WebXR / AR Bridge Preview")
