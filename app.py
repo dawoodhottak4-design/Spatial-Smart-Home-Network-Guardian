@@ -110,7 +110,7 @@ with tab2:
                             {"role": "user", "content": input_text}
                         ],
                         temperature=0.4,
-                        max_tokens=150
+                        max_tokens=300  # 
                     )
 
                     reply = completion.choices[0].message.content
